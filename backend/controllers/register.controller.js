@@ -1,17 +1,16 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const { User } = require("../models/User");
-// Thing to fix -> can't take role input from user end
+
 const register = async (req, res) => {
   try {
-    const { firstName, lastName, email, password, role } = req.body;
+    const { fullName, email, password, role } = req.body;
 
     const hashedPassword = await bcrypt.hash(password, 10);
     const lowerCaseRole = role.toLowerCase();
 
     const newUser = new User({
-      firstName,
-      lastName,
+      fullName,
       email,
       password: hashedPassword,
       role: lowerCaseRole,

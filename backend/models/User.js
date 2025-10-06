@@ -1,19 +1,18 @@
-const mongoose = require('mongoose')
+const mongoose = require("mongoose");
 
 const userSchema = new mongoose.Schema({
-  firstName: {
+  fullName: {
     type: String,
     required: true,
   },
-  lastName: {
-    type: String,
-    required: true,
-  },  
   email: {
     type: String,
     required: true,
     unique: true,
-    match: [/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/, 'Please enter a valid email address']
+    match: [
+      /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/,
+      "Please enter a valid email address",
+    ],
   },
   password: {
     type: String,
@@ -21,10 +20,10 @@ const userSchema = new mongoose.Schema({
   },
   role: {
     type: String,
-    required: true
-  }
+    required: true,
+  },
 });
 
-const User = mongoose.model('User', userSchema);
+const User = mongoose.model("User", userSchema);
 
-module.exports = {User: User}; 
+module.exports = { User: User };
