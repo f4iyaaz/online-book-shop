@@ -93,7 +93,7 @@ const Cart = () => {
         <div className="cart-header">
           <h1>Shopping Cart</h1>
           <div className="cart-header-info">
-            <span className="user-welcome">Welcome, {user.name}!</span>
+            <span className="user-welcome">Welcome, {user.fullName || user.email}!</span>
             <span className="cart-count">{cartItems.length} {cartItems.length === 1 ? 'item' : 'items'}</span>
           </div>
         </div>

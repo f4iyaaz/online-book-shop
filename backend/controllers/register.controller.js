@@ -4,16 +4,16 @@ const { User } = require("../models/User");
 
 const register = async (req, res) => {
   try {
-    const { fullName, email, password, role } = req.body;
+    const { fullName, email, password } = req.body;
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    const lowerCaseRole = role.toLowerCase();
+    const role = "user";
 
     const newUser = new User({
       fullName,
       email,
       password: hashedPassword,
-      role: lowerCaseRole,
+      role,
     });
     await newUser.save();
 

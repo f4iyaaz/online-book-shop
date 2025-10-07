@@ -10,9 +10,11 @@ const Homepage = () => {
   const [isChatbotOpen, setIsChatbotOpen] = useState(false);
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [isRegisterOpen, setIsRegisterOpen] = useState(false);
+  const [authError, setAuthError] = useState('');
+  const [authLoading, setAuthLoading] = useState(false);
   
   const { addToCart, cartItems } = useCart();
-  const { user, login, logout } = useAuth();
+  const { user, login, register, logout } = useAuth();
 
   // Create a ref for the categories section
   const categoriesSectionRef = React.useRef(null);
@@ -101,31 +103,57 @@ const Homepage = () => {
   };
 
   // Auth handlers
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
+    setAuthLoading(true);
+    setAuthError('');
+    
     const formData = new FormData(e.target);
     const email = formData.get('email');
     const password = formData.get('password');
     
-    // Mock login - replace with actual API call
-    login({ name: 'John Doe', email });
-    setIsLoginOpen(false);
+    const result = await login(email, password);
+    
+    if (result.success) {
+      setIsLoginOpen(false);
+      setAuthError('');
+    } else {
+      setAuthError(result.error);
+    }
+    
+    setAuthLoading(false);
   };
 
-  const handleRegister = (e) => {
+  const handleRegister = async (e) => {
     e.preventDefault();
+    setAuthLoading(true);
+    setAuthError('');
+    
     const formData = new FormData(e.target);
-    const name = formData.get('name');
+    const fullName = formData.get('name');
     const email = formData.get('email');
     const password = formData.get('password');
     
-    // Mock registration - replace with actual API call
-    login({ name, email });
-    setIsRegisterOpen(false);
+    const result = await register(fullName, email, password);
+    
+    if (result.success) {
+      setIsRegisterOpen(false);
+      setAuthError('');
+    } else {
+      setAuthError(result.error);
+    }
+    
+    setAuthLoading(false);
   };
 
   const handleLogout = () => {
     logout();
+  };
+
+  const closeModals = () => {
+    setIsLoginOpen(false);
+    setIsRegisterOpen(false);
+    setAuthError('');
   };
 
   const BookCard = ({ book, size = 'medium' }) => (
@@ -185,7 +213,8 @@ const Homepage = () => {
               
               {user ? (
                 <div className="user-menu">
-                  <span>Welcome, {user.name}</span>
+                  <span>Welcome, {user.fullName || user.email}</span>
+                  {user.role && <span className="user-role">({user.role})</span>}
                   <button className="btn-logout" onClick={handleLogout}>
                     Logout
                   </button>
@@ -306,10 +335,11 @@ const Homepage = () => {
 
       {/* Login Modal */}
       {isLoginOpen && (
-        <div className="modal-overlay" onClick={() => setIsLoginOpen(false)}>
+        <div className="modal-overlay" onClick={closeModals}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <button className="modal-close" onClick={() => setIsLoginOpen(false)}>×</button>
+            <button className="modal-close" onClick={closeModals}>×</button>
             <h2>Login to Your Account</h2>
+            {authError && <div className="auth-error">{authError}</div>}
             <form onSubmit={handleLogin}>
               <div className="form-group">
                 <input type="email" name="email" placeholder="Email" required />
@@ -317,11 +347,17 @@ const Homepage = () => {
               <div className="form-group">
                 <input type="password" name="password" placeholder="Password" required />
               </div>
-              <button type="submit" className="btn-primary full-width">Login</button>
+              <button 
+                type="submit" 
+                className="btn-primary full-width"
+                disabled={authLoading}
+              >
+                {authLoading ? 'Logging in...' : 'Login'}
+              </button>
             </form>
             <p className="auth-switch">
               Don't have an account? 
-              <button onClick={() => { setIsLoginOpen(false); setIsRegisterOpen(true); }}>
+              <button onClick={() => { setIsLoginOpen(false); setIsRegisterOpen(true); setAuthError(''); }}>
                 Register here
               </button>
             </p>
@@ -331,10 +367,11 @@ const Homepage = () => {
 
       {/* Register Modal */}
       {isRegisterOpen && (
-        <div className="modal-overlay" onClick={() => setIsRegisterOpen(false)}>
+        <div className="modal-overlay" onClick={closeModals}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <button className="modal-close" onClick={() => setIsRegisterOpen(false)}>×</button>
+            <button className="modal-close" onClick={closeModals}>×</button>
             <h2>Create an Account</h2>
+            {authError && <div className="auth-error">{authError}</div>}
             <form onSubmit={handleRegister}>
               <div className="form-group">
                 <input type="text" name="name" placeholder="Full Name" required />
@@ -345,11 +382,17 @@ const Homepage = () => {
               <div className="form-group">
                 <input type="password" name="password" placeholder="Password" required />
               </div>
-              <button type="submit" className="btn-primary full-width">Register</button>
+              <button 
+                type="submit" 
+                className="btn-primary full-width"
+                disabled={authLoading}
+              >
+                {authLoading ? 'Creating Account...' : 'Register'}
+              </button>
             </form>
             <p className="auth-switch">
               Already have an account? 
-              <button onClick={() => { setIsRegisterOpen(false); setIsLoginOpen(true); }}>
+              <button onClick={() => { setIsRegisterOpen(false); setIsLoginOpen(true); setAuthError(''); }}>
                 Login here
               </button>
             </p>
