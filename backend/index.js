@@ -4,6 +4,7 @@ const { addBookRouter } = require("./routes/addBook.route");
 const { getAllBooksRouter } = require("./routes/getAllBooks.route");
 const { deleteBookRouter } = require("./routes/deleteBook.route");
 const { addToCartRouter } = require("./routes/addToCart.route");
+const { getCartRouter } = require("./routes/getCart.route");
 
 const express = require("express");
 const mongoose = require("mongoose");
@@ -34,6 +35,7 @@ app.use("/backend/addBook", addBookRouter);
 app.use("/backend/getAllBooks", getAllBooksRouter);
 app.use("/backend/deleteBook", deleteBookRouter);
 app.use("/backend/addToCart", addToCartRouter);
+app.use("/backend/getCart", getCartRouter)
 
 app.listen(port, () => {
   console.log(`Server is running at port: ${port}`);
